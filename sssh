@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Some meta functionality. Help and version information.
+if test $1 == "-h" -o $1 == "--help"; then
+  echo "Usage: sssh server site"
+  echo "Example: sssh d1 aai"
+  exit 0
+elif test $1 == "-v" -o $1 == "--version"; then
+  echo "Version 0.1 by Daniel Flaum (daniel.flaum@sprydigital.com)"
+  exit 0
+fi
+
+# Check the server argument against the hosts in the user's ssh config file.
+if test ! -r ~/.ssh/config; then
+  echo "Error: Your SSH configuration file is not readable"
+  echo "     : I tried to access it at" ~/.ssh/config
+  exit 1
+fi
+
+AVAILABLE_HOSTS=`grep -e "^Host " ~/.ssh/config | sed "s/Host //"`
+
+if ! echo "$AVAILABLE_HOSTS" | grep -q -e $1; then
+  echo "Error: The server you specified does not exist in your SSH configuration file"
+  echo "     : I searched through" ~/.ssh/config
+  exit 1
+fi
+
+ssh -t $1 "export SSSH_SITE="$2"; sudo -sE /bin/bash --init-file /usr/bin/ssshrouter"

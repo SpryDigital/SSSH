@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Check the site argument against the sites in the server's index file.
+if test ! -r /etc/ssshindex; then
+  echo "Error: The router index file is not readable"
+  echo "     : I tried to access it at /etc/ssshindex"
+  exit 1
+fi
+
+AVAILABLE_SITES=`cat /etc/ssshindex | sed "s/ .*$//"`
+
+if ! echo "$AVAILABLE_SITES" | grep -q -e $SSSH_SITE; then
+  echo "Error: The site you specified does not exist in the router index file"
+  echo "     : I searched through /etc/ssshindex"
+  exit 1
+fi
+
+SSSH_DIRECTORY=`grep -e "^$SSSH_SITE" /etc/ssshindex | sed "s/^.* //"`
+cd $SSSH_DIRECTORY
+
+export PS1="\e[1;31m\u\e[m@\e[1;33m\h\e[1;35m \W\e[m $ "
