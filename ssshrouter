@@ -15,6 +15,8 @@ if ! echo "$AVAILABLE_SITES" | grep -q -e $SSSH_SITE; then
   exit 1
 fi
 
+source /etc/bashrc
+
 SSSH_DIRECTORY=`grep -e "^$SSSH_SITE" /etc/ssshindex | sed "s/^.* //"`
 cd $SSSH_DIRECTORY
 
