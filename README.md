@@ -35,7 +35,7 @@ How to install it
 1. Place `sssh` somewhere that's in your shell's `PATH`. `/usr/bin` is recommended.
 2. Setup all the machines you're going to be SSSSHing to as hosts in your SSH `config` file. Check out [Nerdarati's lovely article](http://nerderati.com/2011/03/17/simplify-your-life-with-an-ssh-config-file/) on this if you need guidance.
 3. Place `ssshrouter` at `/usr/bin/ssshrouter` on every server you're going to be SSSHing to. This location is non-negotiable for now.
-4. Write an `ssshindex` file and place it at `/etc/ssshindex`. This file consists of space-separated key-value records, one on each line. They are bookmarks of directories you want to be able to automatically CD to. The key is a short, memorable name which you will use as an argument for `sssh` (and thus, `ssshrouter`). The value is just the absolute path your want CD to. You can use the sample file included in this repository as a guide.  
+4. Write an `ssshindex` file and place it at `/etc/ssshindex`. This file consists of space-separated key-value records, one on each line. They are bookmarks of directories you want to be able to automatically CD to. The key is a short, memorable name which you will use as an argument for `sssh` (and thus, `ssshrouter`). The value is just the absolute path your want CD to. You can use the sample file included in this repository as a guide.
 
 How to use it
 -------------

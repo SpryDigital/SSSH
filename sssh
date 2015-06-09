@@ -6,7 +6,7 @@ if test $1 == "-h" -o $1 == "--help"; then
   echo "Example: sssh d1 aai"
   exit 0
 elif test $1 == "-v" -o $1 == "--version"; then
-  echo "Version 0.1 by Daniel Flaum (daniel.flaum@sprydigital.com)"
+  echo "Client version 0.2 by Daniel Flaum (daniel.flaum@sprydigital.com)"
   exit 0
 fi
 

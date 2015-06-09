@@ -1,12 +1,26 @@
 #!/bin/bash
 
-# Check the site argument against the sites in the server's index file.
+# Some meta functionality. Version information.
+if [ $SSSH_SITE = "version" ]; then
+  echo "Router version 0.2 by Daniel Flaum (daniel.flaum@sprydigital.com)"
+  exit 0
+fi
+
+# Check that the server's index file is readable
 if test ! -r /etc/ssshindex; then
   echo "Error: The router index file is not readable"
   echo "     : I tried to access it at /etc/ssshindex"
   exit 1
 fi
 
+# If the site argument is the list command, do so.
+if [ $SSSH_SITE = "list" ]; then
+  cat /etc/ssshindex;
+  printf "\n";
+  exit 0
+fi
+
+# Check the site argument against the sites in the server's index file.
 AVAILABLE_SITES=`cat /etc/ssshindex | sed "s/ .*$//"`
 
 if ! echo "$AVAILABLE_SITES" | grep -q -e $SSSH_SITE; then
