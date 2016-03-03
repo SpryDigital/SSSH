@@ -40,17 +40,17 @@ How to install it
 How to use it
 -------------
 
-  usage: sssh [-h] [-v] [-r] [-l] [server] [site]
+    usage: sssh [-h] [-v] [-r] [-l] [server] [site]
 
-  positional arguments:
-    server         The name of a server bookmark in your SSH configuration file.
-    site           The name of a site bookmark in the server's index file.
+    positional arguments:
+      server         The name of a server bookmark in your SSH configuration file.
+      site           The name of a site bookmark in the server's index file.
 
-  optional arguments:
-    -h, --help     show this help message and exit
-    -v, --version  Print version information and quit immediately. All other options and arguments will be ignored.
-    -r, --root     Become root after logging in.
-    -l, --list     Print the contents of the server's index file. The site argument will be ignored.
+    optional arguments:
+      -h, --help     show this help message and exit
+      -v, --version  Print version information and quit immediately. All other options and arguments will be ignored.
+      -r, --root     Become root after logging in.
+      -l, --list     Print the contents of the server's index file. The site argument will be ignored.
 
 Todos
 -----
