@@ -35,7 +35,7 @@ argumentParser.add_argument("site",
 arguments = argumentParser.parse_args()
 
 if arguments.version == True:
-  print("Client version 0.3 by Daniel Flaum (daniel.flaum@sprydigital.com)")
+  print("Client version 0.4 by Daniel Flaum (daniel.flaum@sprydigital.com)")
   sys.exit()
 
 if arguments.server == "null":

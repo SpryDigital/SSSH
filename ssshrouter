@@ -2,43 +2,48 @@
 
 # Some meta functionality. Version information.
 if [[ $SSSH_SITE == "version" ]]; then
-  echo "Router version 0.3 by Daniel Flaum (daniel.flaum@sprydigital.com)"
+  echo "Router version 0.4 by Daniel Flaum (daniel.flaum@sprydigital.com)"
   exit 0
 fi
 
-# Check that the server's index file is readable
-if test ! -r /etc/ssshindex; then
-  echo "Error: The router index file is not readable"
-  echo "     : I tried to access it at /etc/ssshindex"
-  exit 1
+if [[ -z $SSSH_USER ]]; then
+
+  # Check that the server's index file is readable
+  if test ! -r /etc/ssshindex; then
+    echo "Error: The router index file is not readable"
+    echo "     : I tried to access it at /etc/ssshindex"
+    exit 1
+  fi
+
+  # If the list argument was provided, list the index and exit.
+  if [[ $SSSH_LIST -eq 1 ]]; then
+    cat /etc/ssshindex;
+    printf "\n";
+    exit 0
+  fi
+
+  # Check the site argument against the sites in the server's index file.
+  AVAILABLE_SITES=`cat /etc/ssshindex | sed "s/ .*$//"`
+
+  if ! echo "$AVAILABLE_SITES" | grep -q -e $SSSH_SITE; then
+    echo "Error: The site you specified does not exist in the router index file"
+    echo "     : I searched through /etc/ssshindex"
+    exit 1
+  fi
+
+  SSSH_USER=`grep -e "^$SSSH_SITE" /etc/ssshindex | sed "s/^.* \(.*\) .*$/\1/"`
+
+  SSSH_DIRECTORY=`grep -e "^$SSSH_SITE" /etc/ssshindex | sed "s/^.* .* //"`
+
+  if [[ $SSSH_BECOME_ROOT -ne 1 &&
+        `whoami` != $SSSH_USER ]]; then
+    sudo -iu $SSSH_USER SSSH_USER=$SSSH_USER SSSH_SITE=$SSSH_SITE SSSH_DIRECTORY=$SSSH_DIRECTORY /bin/bash --init-file /usr/bin/ssshrouter
+
+    exit 0
+  fi
+
 fi
 
-# If the list argument was provided, list the index and exit.
-if [[ $SSSH_LIST -eq 1 ]]; then
-  cat /etc/ssshindex;
-  printf "\n";
-  exit 0
-fi
-
-# Check the site argument against the sites in the server's index file.
-AVAILABLE_SITES=`cat /etc/ssshindex | sed "s/ .*$//"`
-
-if ! echo "$AVAILABLE_SITES" | grep -q -e $SSSH_SITE; then
-  echo "Error: The site you specified does not exist in the router index file"
-  echo "     : I searched through /etc/ssshindex"
-  exit 1
-fi
-
-SSSH_USER=`grep -e "^$SSSH_SITE" /etc/ssshindex | sed "s/^.* \(.*\) .*$/\1/"`
-
-if [[ $SSSH_BECOME_ROOT -ne 1 &&
-      `whoami` != $SSSH_USER ]]; then
-  sudo -iu $SSSH_USER SSSH_SITE=$SSSH_SITE /bin/bash --init-file /usr/bin/ssshrouter
-fi
-
-source /etc/bashrc
-
-SSSH_DIRECTORY=`grep -e "^$SSSH_SITE" /etc/ssshindex | sed "s/^.* .* //"`
 cd $SSSH_DIRECTORY
 
 if [[ `whoami` = "root" ]]; then
