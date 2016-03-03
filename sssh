@@ -1,28 +1,74 @@
-#!/bin/bash
+#!/usr/local/bin/python3
 
-# Some meta functionality. Help and version information.
-if test $1 == "-h" -o $1 == "--help"; then
-  echo "Usage: sssh server site"
-  echo "Example: sssh d1 aai"
-  exit 0
-elif test $1 == "-v" -o $1 == "--version"; then
-  echo "Client version 0.2 by Daniel Flaum (daniel.flaum@sprydigital.com)"
-  exit 0
-fi
+import argparse
+import io
+import re
+import sys
+import os
+import subprocess
 
-# Check the server argument against the hosts in the user's ssh config file.
-if test ! -r ~/.ssh/config; then
-  echo "Error: Your SSH configuration file is not readable"
-  echo "     : I tried to access it at" ~/.ssh/config
-  exit 1
-fi
+argumentParser = argparse.ArgumentParser()
 
-AVAILABLE_HOSTS=`grep -e "^Host " ~/.ssh/config | sed "s/Host //"`
+argumentParser.add_argument("-v", "--version",
+                            help="Print version information and quit immediately. All other options and arguments will be ignored.",
+                            action="store_const",
+                            const=True)
+argumentParser.add_argument("-r", "--root",
+                            help="Become root after logging in.",
+                            action="store_const",
+                            const=True)
+argumentParser.add_argument("-l", "--list",
+                            help="Print the contents of the server's index file. The site argument will be ignored.",
+                            action="store_const",
+                            const=True)
 
-if ! echo "$AVAILABLE_HOSTS" | grep -q -e $1; then
-  echo "Error: The server you specified does not exist in your SSH configuration file"
-  echo "     : I searched through" ~/.ssh/config
-  exit 1
-fi
+argumentParser.add_argument("server",
+                            help="The name of a server bookmark in your SSH configuration file.",
+                            action="store",
+                            nargs='?',
+                            default="null")
+argumentParser.add_argument("site",
+                            help="The name of a site bookmark in the server's index file.",
+                            nargs='?',
+                            default="null")
 
-ssh -t $1 "export SSSH_SITE="$2"; sudo -sE /bin/bash --init-file /usr/bin/ssshrouter"
+arguments = argumentParser.parse_args()
+
+if arguments.version == True:
+  print("Client version 0.3 by Daniel Flaum (daniel.flaum@sprydigital.com)")
+  sys.exit()
+
+if arguments.server == "null":
+    print("Error: No server bookmark was provided.")
+    exit(1)
+
+ssh_config_file = open(os.path.expanduser("~/.ssh/config"))
+ssh_config_contents = ssh_config_file.read()
+ssh_config_lines = ssh_config_contents.splitlines()
+
+server_bookmark_is_present = False
+for line in ssh_config_lines:
+  match = re.match("Host " + re.escape(arguments.server), line)
+  if match:
+    server_bookmark_is_present = True
+
+if server_bookmark_is_present == False:
+  print("Error: The server bookmark you specified does not exist in your SSH configuration file.")
+  print("     : I search through " + os.path.expanduser("~/.ssh/config"))
+  sys.exit(1)
+
+environment_variables = "SSSH_SITE=\"" + arguments.site + "\" "
+
+if arguments.list == True:
+  environment_variables = environment_variables + "SSSH_LIST=1 "
+else:
+  if arguments.site == "null":
+    print("Error: No site bookmark was provided.")
+    exit(1)
+
+if arguments.root == True:
+  environment_variables = environment_variables + "SSSH_BECOME_ROOT=1 "
+
+command = "ssh -t " + arguments.server + " \"" + environment_variables + "sudo -sE /bin/bash --init-file /usr/bin/ssshrouter\""
+
+subprocess.run(command, shell=True)
