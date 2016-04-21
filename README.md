@@ -9,7 +9,7 @@ What it does
 This utility does all this...
 
     local $ ssh -p 1234 user@server
-    remote $ sudo -i
+    remote $ sudo -i someotheruser
     remote $ cd /path/to/some/predetermined/directory
     
 with just this:
