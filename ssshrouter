@@ -2,7 +2,7 @@
 
 # Some meta functionality. Version information.
 if [[ $SSSH_SITE == "version" ]]; then
-  echo "Router version 0.4 by Daniel Flaum (daniel.flaum@sprydigital.com)"
+  echo "Router version 0.5 by Daniel Flaum (daniel.flaum@sprydigital.com)"
   exit 0
 fi
 
@@ -31,9 +31,9 @@ if [[ -z $SSSH_USER ]]; then
     exit 1
   fi
 
-  SSSH_USER=`grep -e "^$SSSH_SITE" /etc/ssshindex | sed "s/^.* \(.*\) .*$/\1/"`
+  SSSH_USER=`grep -e "^$SSSH_SITE\s" /etc/ssshindex | sed "s/^.* \(.*\) .*$/\1/"`
 
-  SSSH_DIRECTORY=`grep -e "^$SSSH_SITE" /etc/ssshindex | sed "s/^.* .* //"`
+  SSSH_DIRECTORY=`grep -e "^$SSSH_SITE\s" /etc/ssshindex | sed "s/^.* .* //"`
 
   if [[ $SSSH_BECOME_ROOT -ne 1 &&
         `whoami` != $SSSH_USER ]]; then
